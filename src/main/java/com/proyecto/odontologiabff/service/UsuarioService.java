@@ -1,10 +1,9 @@
 package com.proyecto.odontologiabff.service;
 
-import java.util.List;
-
-import com.proyecto.odontologiabff.dto.UsuarioDTO;
+import com.proyecto.odontologiabff.dto.LoginDTO;
+import com.proyecto.odontologiabff.dto.RegistroPacienteDTO;
 
 public interface UsuarioService {
-    void registrarUsuario(UsuarioDTO usuarioDTO);
-    String loginUsuario(UsuarioDTO usuarioDTO);
+    void registrarPaciente(RegistroPacienteDTO dto);
+    String loginUsuario(LoginDTO loginDTO);
 }

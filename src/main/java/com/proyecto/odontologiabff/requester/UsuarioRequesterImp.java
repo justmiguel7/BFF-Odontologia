@@ -7,6 +7,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.proyecto.odontologiabff.dto.LoginDTO;
 import com.proyecto.odontologiabff.dto.UsuarioDTO;
 
 @Service
@@ -31,9 +32,9 @@ public class UsuarioRequesterImp implements UsuarioRequester {
     }
 
     @Override
-    public String loginUsuario(UsuarioDTO usuarioDTO) {
-        HttpEntity<UsuarioDTO> entity = new HttpEntity<>(usuarioDTO);
+    public String loginUsuario(LoginDTO loginDTO) {
+        HttpEntity<LoginDTO> entity = new HttpEntity<>(loginDTO);
         ResponseEntity<String> response = restTemplate.exchange(urlUsuario + pathLogin, HttpMethod.POST, entity, String.class);
-        return response.getBody(); // Esto debería ser el JWT
+        return response.getBody(); // JWT
     }
 }

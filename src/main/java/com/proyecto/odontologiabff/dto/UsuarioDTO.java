@@ -12,5 +12,6 @@ import jakarta.validation.constraints.Size;
 public class UsuarioDTO {
     private String username;
     private String password;
-    private RolUsuario role; 
+    private RolUsuario rol; 
+    private String dni; 
 }
