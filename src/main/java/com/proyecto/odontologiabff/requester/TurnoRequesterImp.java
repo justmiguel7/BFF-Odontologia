@@ -47,28 +47,28 @@ public class TurnoRequesterImp implements TurnoRequester{
 	    }
 	    
 	  @Override
-	  public boolean existePaciente(int idpaciente) {
+	  public boolean existePaciente(String dnipaciente) {
 	      try {
-	          String url = urlPaciente + "/buscarid/" + idpaciente; // <-- ajustar a la ruta real
+	          String url = urlPaciente + "/buscarPorDni/" + dnipaciente;
 	          ResponseEntity<PacienteDTO> response = restTemplate.getForEntity(url, PacienteDTO.class);
 	          return response.getStatusCode().is2xxSuccessful() && response.getBody() != null;
 	      } catch (Exception e) {
-	          log.warn("Paciente con ID {} no encontrado: {}", idpaciente, e.getMessage());
+	          log.warn("Paciente con DNI {} no encontrado: {}", dnipaciente, e.getMessage());
 	          return false;
 	      }
 	  }
 
-
 	  @Override
-	  public boolean existeOdontologo(int idOdontologo) {
+	  public boolean existeOdontologo(String dniodontologo) {
 	      try {
-	          String url = urlOdontologo + "/buscarid/" + idOdontologo; // <-- corregido
+	          String url = urlOdontologo + "/buscarPorDni/" + dniodontologo;
 	          ResponseEntity<OdontologoDTO> response = restTemplate.getForEntity(url, OdontologoDTO.class);
 	          return response.getStatusCode().is2xxSuccessful() && response.getBody() != null;
 	      } catch (Exception e) {
-	          log.warn("Odontólogo con ID {} no encontrado: {}", idOdontologo, e.getMessage());
+	          log.warn("Odontólogo con DNI {} no encontrado: {}", dniodontologo, e.getMessage());
 	          return false;
 	      }
 	  }
+
 
 	}

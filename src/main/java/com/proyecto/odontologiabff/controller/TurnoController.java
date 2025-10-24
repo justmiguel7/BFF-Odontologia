@@ -2,10 +2,7 @@ package com.proyecto.odontologiabff.controller;
 
 import com.proyecto.odontologiabff.dto.EstadoTurno;
 import com.proyecto.odontologiabff.dto.TurnoDTO;
-
-import com.proyecto.odontologiabff.requester.TurnoRequesterImp;
 import com.proyecto.odontologiabff.service.TurnoService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,29 +21,26 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "http://localhost:4200")
 public class TurnoController {
 
-	private static final Logger log = LoggerFactory.getLogger(TurnoRequesterImp.class);
+    private static final Logger log = LoggerFactory.getLogger(TurnoController.class);
 
-	
     @Autowired
     private TurnoService turnoService;
 
-    @PostMapping(value = "/agregarTurno", produces = {MediaType.APPLICATION_JSON_VALUE } , consumes = {MediaType.APPLICATION_JSON_VALUE } )
+    @PostMapping(value = "/agregarTurno", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> crearTurno(@RequestBody TurnoDTO turnoDTO) throws Exception {
         turnoService.crearTurno(turnoDTO);
-    		log.info("se ingresa {}", turnoDTO);
-    	
+        log.info("Se ingresa turno: {}", turnoDTO);
         return ResponseEntity.ok("Turno creado correctamente");
     }
-    
 
     // Endpoint para PACIENTE
     @PostMapping(value = "/agregarTurnoPaciente", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> crearTurnoPaciente(@RequestBody TurnoDTO turnoDTO) {
-        try {	
+        try {
             log.info("Creando turno (PACIENTE): {}", turnoDTO);
 
             // el paciente no debe enviar odontólogo
-            turnoDTO.setIdodontologo(0);
+            turnoDTO.setDniodontologo(null);
             turnoDTO.setEstado(EstadoTurno.PENDIENTE);
 
             turnoService.crearTurnoPaciente(turnoDTO);
@@ -59,22 +53,22 @@ public class TurnoController {
         }
     }
 
- // Endpoint para ODONTÓLOGO
+    // Endpoint para ODONTÓLOGO
     @PostMapping(value = "/agregarTurnoOdontologo", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> crearTurnoOdontologo(@RequestBody TurnoDTO turnoDTO) {
         try {
             log.info("Creando turno (ODONTÓLOGO): {}", turnoDTO);
 
             // Validar existencia de paciente
-            if (!turnoService.existePaciente(turnoDTO.getIdpaciente())) {
+            if (!turnoService.existePaciente(turnoDTO.getDnipaciente())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("El paciente con ID " + turnoDTO.getIdpaciente() + " no existe");
+                        .body("El paciente con DNI " + turnoDTO.getDnipaciente() + " no existe");
             }
 
             // Validar existencia de odontólogo
-            if (!turnoService.existeOdontologo(turnoDTO.getIdodontologo())) {
+            if (!turnoService.existeOdontologo(turnoDTO.getDniodontologo())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("El odontólogo con ID " + turnoDTO.getIdodontologo() + " no existe");
+                        .body("El odontólogo con DNI " + turnoDTO.getDniodontologo() + " no existe");
             }
 
             // Estado CONFIRMADO
@@ -90,7 +84,4 @@ public class TurnoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
         }
     }
-
-    
 }
-

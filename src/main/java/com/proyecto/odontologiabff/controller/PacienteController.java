@@ -44,6 +44,8 @@ public class PacienteController {
     public PacienteDTO obtenerPacientePorId(@PathVariable int id) {
         return pacienteService.obtenerPacientePorId(id);
     }
+    
+    
 
 }
 

@@ -11,6 +11,6 @@ public interface TurnoService {
 	void crearTurno(TurnoDTO turnoDTO) throws Exception;
     void crearTurnoPaciente(TurnoDTO turnoDTO) throws Exception;
     void crearTurnoOdontologo(TurnoDTO turnoDTO) throws Exception;
-    boolean existePaciente(int idPaciente);
-    boolean existeOdontologo(int idOdontologo);
+    boolean existePaciente(String dnipaciente);
+    boolean existeOdontologo(String dniodontologo);
 }
