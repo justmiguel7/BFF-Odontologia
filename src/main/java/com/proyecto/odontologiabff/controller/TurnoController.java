@@ -4,6 +4,8 @@ import com.proyecto.odontologiabff.dto.EstadoTurno;
 import com.proyecto.odontologiabff.dto.TurnoDTO;
 import com.proyecto.odontologiabff.service.TurnoService;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +46,15 @@ public class TurnoController {
             turnoDTO.setEstado(EstadoTurno.PENDIENTE);
 
             turnoService.crearTurnoPaciente(turnoDTO);
-            return ResponseEntity.ok("Turno creado correctamente (pendiente de confirmación)");
+            return ResponseEntity.ok(Map.of("message", "Turno creado correctamente (pendiente de confirmación)"));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             log.error("Error al crear turno para paciente", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
         }
+        
+        
     }
 
     // Endpoint para ODONTÓLOGO

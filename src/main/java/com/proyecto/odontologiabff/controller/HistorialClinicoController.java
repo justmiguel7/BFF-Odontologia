@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.odontologiabff.dto.HistorialClinicoDTO;
-import com.proyecto.odontologiabff.dto.TratamientosDTO;
 import com.proyecto.odontologiabff.requester.HistorialClinicoRequesterImp;
 import com.proyecto.odontologiabff.service.HistorialClinicoService;
 
@@ -35,5 +36,17 @@ private static final Logger log = LoggerFactory.getLogger(HistorialClinicoReques
     		log.info("se ingresa {}", historialClinicoDTO);
     		
         return ResponseEntity.ok("Historial Clinico creado correctamente");
-    }}
+    }
+    
+    @GetMapping("/buscarPaciente/{dni}")
+    public HistorialClinicoDTO obtenerHistorialClinicoPorDniPaciente(@PathVariable String dni) {
+        return historialClinicoService.obtenerHistorialClinicoPorDniPaciente(dni);
+    }
+    
+    @GetMapping("/buscarOdontologo/{dni}")
+    public HistorialClinicoDTO obtenerHistorialClinicoPorDniOdontologo(@PathVariable String dni) {
+        return historialClinicoService.obtenerHistorialClinicoPorDniOdontologo(dni);
+    }
+    
+}
 

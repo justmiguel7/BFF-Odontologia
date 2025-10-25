@@ -7,8 +7,8 @@ import lombok.Data;
 
 @Data
 public class HistorialClinicoDTO {
-	private int idpaciente;
-	private int idodontologo;
+	private String dnipaciente;
+	private String dniodontologo;
 	private int idtratamiento;
 	private String motivodeconsulta;
 	private LocalDateTime fechadeconsulta;
@@ -17,12 +17,12 @@ public class HistorialClinicoDTO {
 	private String alergias;
 	private String antecedentesmedicos;
 
-	public HistorialClinicoDTO(int idpaciente, int idodontologo, int idtratamiento, String motivodeconsulta,  LocalDateTime fechadeconsulta,
+	public HistorialClinicoDTO(String dnipaciente, String dniodontologo, int idtratamiento, String motivodeconsulta,  LocalDateTime fechadeconsulta,
 			String diagnostico, String observaciones, String alergias , String antecedentesmedicos) {
 		super();
 
-		this.idpaciente = idpaciente;
-		this.idodontologo = idodontologo;
+		this.dnipaciente = dnipaciente;
+		this.dniodontologo = dniodontologo;
 		this.idtratamiento = idtratamiento;
 		this.motivodeconsulta = motivodeconsulta;
 		this.fechadeconsulta = fechadeconsulta;

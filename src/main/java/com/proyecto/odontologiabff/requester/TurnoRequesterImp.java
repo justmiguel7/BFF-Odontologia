@@ -69,6 +69,21 @@ public class TurnoRequesterImp implements TurnoRequester{
 	          return false;
 	      }
 	  }
+	  
+	  @Override
+	  public String obtenerEmailPaciente(String dnipaciente) {
+	      try {
+	          String url = urlPaciente + "/buscarPorDni/" + dnipaciente;
+	          ResponseEntity<PacienteDTO> response = restTemplate.getForEntity(url, PacienteDTO.class);
+	          if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+	              return response.getBody().getEmail(); // asumimos que PacienteDTO tiene getCorreo()
+	          }
+	      } catch (Exception e) {
+	          log.warn("No se pudo obtener email del paciente {}: {}", dnipaciente, e.getMessage());
+	      }
+	      return null;
+	  }
+
 
 
 	}
