@@ -14,9 +14,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ComponentScan("com.proyecto.odontologo.*")
 @ComponentScan("com.proyecto.odontologiabff.*")
 @ComponentScan("com.proyecto.facturacion.*")
-@ComponentScan("com.proyecto.historialclinico.*")
 @ComponentScan("com.proyecto.usuario.*")
-
+@ComponentScan("com.proyecto.tratamientos.*")
 
 public class OdontologiabffApplication {
 

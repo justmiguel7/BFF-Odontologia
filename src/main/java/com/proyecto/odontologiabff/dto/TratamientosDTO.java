@@ -15,7 +15,6 @@ public class TratamientosDTO {
 	private BigDecimal costoBase;
 	
 	private String duracionEstimado;
-    private LocalDateTime	fechaCreacion;
     
     
     public TratamientosDTO() {
@@ -24,14 +23,13 @@ public class TratamientosDTO {
 
 
 	public TratamientosDTO( String nombre, String descripcion, BigDecimal costoBase,
-			String duracionEstimado, LocalDateTime fechaCreacion) {
+			String duracionEstimado ) {
 		super();
 		
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.costoBase = costoBase;
 		this.duracionEstimado = duracionEstimado;
-		this.fechaCreacion = fechaCreacion;
 	}
     
 

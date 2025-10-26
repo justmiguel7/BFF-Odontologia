@@ -19,4 +19,9 @@ public class TratamientosServiceImp implements TratamientosService{
 		this.tratamientoRequester.enviarNuevoTratamiento(tratamientosDTO);
 	}
 
+	@Override
+	public TratamientosDTO buscarPorId(int id) throws Exception {
+		return null;
+	}
+
 }

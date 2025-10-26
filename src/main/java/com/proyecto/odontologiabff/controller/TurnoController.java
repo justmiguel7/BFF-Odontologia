@@ -4,6 +4,7 @@ import com.proyecto.odontologiabff.dto.EstadoTurno;
 import com.proyecto.odontologiabff.dto.TurnoDTO;
 import com.proyecto.odontologiabff.service.TurnoService;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -13,7 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +38,32 @@ public class TurnoController {
         log.info("Se ingresa turno: {}", turnoDTO);
         return ResponseEntity.ok("Turno creado correctamente");
     }
+    
+    
+    @GetMapping("/listado")
+    public ResponseEntity<List<TurnoDTO>> obtenerTurnosPaciente() {
+        // Obtener todos los turnos desde el service
+        List<TurnoDTO> todosLosTurnos = turnoService.obtenerListadoTurnos();
+
+        // Filtrar solo los turnos de pacientes (sin odontólogo o pendientes)
+        List<TurnoDTO> turnosPaciente = todosLosTurnos.stream()
+                .filter(turno -> turno.getDniodontologo() == null 
+                                || turno.getEstado() == EstadoTurno.PENDIENTE)
+                .toList();
+
+        return ResponseEntity.ok(turnosPaciente);
+    }
+    
+    
+    
+    // Confirmar turno por dni del paciente
+    @PutMapping("/confirmar/{dnipaciente}")
+    public ResponseEntity<TurnoDTO> confirmarTurno(@PathVariable String dnipaciente) {
+        TurnoDTO turnoConfirmado = turnoService.confirmarTurnoPorDni(dnipaciente);
+        return ResponseEntity.ok(turnoConfirmado);
+    }
+
+    
 
     // Endpoint para PACIENTE
     @PostMapping(value = "/agregarTurnoPaciente", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -80,8 +110,6 @@ public class TurnoController {
 
             turnoService.crearTurnoOdontologo(turnoDTO);
             return ResponseEntity.ok(Map.of("message", "Turno creado correctamente (confirmado por odontólogo)"));
-            
-
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

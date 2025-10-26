@@ -4,6 +4,8 @@ import com.proyecto.odontologiabff.dto.TurnoDTO;
 import com.proyecto.odontologiabff.dto.PacienteDTO;
 import com.proyecto.odontologiabff.dto.OdontologoDTO;
 
+import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +24,7 @@ public class TurnoRequesterImp implements TurnoRequester{
     private String urlTurno;
 
     @Value("${ms.paciente.url}")
-    private String urlPaciente;
+    private String urlPaciente;	
 
     @Value("${ms.odontologo.url}")
     private String urlOdontologo;
@@ -30,7 +32,8 @@ public class TurnoRequesterImp implements TurnoRequester{
 		private String pathAgregar ="/agregar";
 		
 
-		private String pathListar ="/listar";
+		private String pathListar ="/listado";
+		private String pathConfirmar ="/confirmar/{dnipaciente}";
 	 
 		private static final Logger log = LoggerFactory.getLogger(TurnoRequesterImp.class);
 
@@ -38,6 +41,25 @@ public class TurnoRequesterImp implements TurnoRequester{
 	  public TurnoRequesterImp(RestTemplateBuilder builder) {
 	        this.restTemplate = builder.build();
 	    }
+	  
+	  @Override
+	  public List<TurnoDTO> obtenerTurnos() {
+	      String url = urlTurno.concat(pathListar); // usa la variable ya declarada
+	      ResponseEntity<TurnoDTO[]> response = restTemplate.getForEntity(url, TurnoDTO[].class);
+	      return Arrays.asList(response.getBody());
+	  }
+	  
+	  @Override
+	  public TurnoDTO confirmarTurnoPorDni(String dnipaciente) {
+	      return restTemplate.exchange(
+	              urlTurno + pathConfirmar.replace("{dnipaciente}", dnipaciente),
+	              HttpMethod.PUT,
+	              null,
+	              TurnoDTO.class
+	      ).getBody();
+	      
+	  }
+	  
 
 	  @Override
 	    public void enviarNuevoTurno(TurnoDTO turnoDTO) {

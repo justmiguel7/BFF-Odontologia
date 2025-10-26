@@ -1,5 +1,7 @@
 package com.proyecto.odontologiabff.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.proyecto.odontologiabff.dto.TurnoDTO;
@@ -28,6 +30,14 @@ public class TurnoServiceImp implements TurnoService {
             mailService.enviar(mail);
         }
     }
+    
+
+    @Override
+    public TurnoDTO confirmarTurnoPorDni(String dnipaciente) {
+        return turnoRequester.confirmarTurnoPorDni(dnipaciente);
+    }
+    
+    
 
     @Override
     public void crearTurnoPaciente(TurnoDTO turnoDTO) throws Exception {
@@ -83,4 +93,11 @@ public class TurnoServiceImp implements TurnoService {
     public boolean existeOdontologo(String dniOdontologo) {
         return turnoRequester.existeOdontologo(dniOdontologo);
     }
+    
+    @Override
+    public List<TurnoDTO> obtenerListadoTurnos() {
+        return turnoRequester.obtenerTurnos();
+    }
+    
+    
 }
