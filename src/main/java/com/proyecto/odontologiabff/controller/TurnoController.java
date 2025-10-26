@@ -79,7 +79,9 @@ public class TurnoController {
             turnoDTO.setEstado(EstadoTurno.CONFIRMADO);
 
             turnoService.crearTurnoOdontologo(turnoDTO);
-            return ResponseEntity.ok("Turno creado correctamente (confirmado por odontólogo)");
+            return ResponseEntity.ok(Map.of("message", "Turno creado correctamente (confirmado por odontólogo)"));
+            
+
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

@@ -18,6 +18,9 @@ public class UsuarioServiceImp implements UsuarioService {
 
     @Autowired
     private PacienteService pacienteService;
+    
+    @Autowired
+    private DienteService dienteService;
 
     @Override
     public void registrarPaciente(RegistroPacienteDTO dto) {
@@ -42,6 +45,9 @@ public class UsuarioServiceImp implements UsuarioService {
                 dto.getFecharegistro()
             );
 
+            dienteService.crearDientesBase(dto.getDni());
+
+            
             pacienteService.crearPaciente(pacienteDTO);
 
         } catch (Exception e) {
