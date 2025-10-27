@@ -17,7 +17,7 @@ public interface TurnoService {
     boolean existeOdontologo(String dniodontologo);
 
     List<TurnoDTO> obtenerListadoTurnos();
-    TurnoDTO confirmarTurnoPorDni(String dnipaciente);
+	TurnoDTO confirmarTurnoPorId(int idTurno, String dniOdontologo) throws Exception;
 
 
 

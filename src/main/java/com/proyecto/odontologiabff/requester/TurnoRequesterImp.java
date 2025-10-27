@@ -49,16 +49,7 @@ public class TurnoRequesterImp implements TurnoRequester{
 	      return Arrays.asList(response.getBody());
 	  }
 	  
-	  @Override
-	  public TurnoDTO confirmarTurnoPorDni(String dnipaciente) {
-	      return restTemplate.exchange(
-	              urlTurno + pathConfirmar.replace("{dnipaciente}", dnipaciente),
-	              HttpMethod.PUT,
-	              null,
-	              TurnoDTO.class
-	      ).getBody();
-	      
-	  }
+
 	  
 
 	  @Override

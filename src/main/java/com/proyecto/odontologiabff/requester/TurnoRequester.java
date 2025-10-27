@@ -10,5 +10,4 @@ public interface TurnoRequester {
     boolean existeOdontologo(String dniodontologo);
     String obtenerEmailPaciente(String dnipaciente);
     List<TurnoDTO> obtenerTurnos();
-    TurnoDTO confirmarTurnoPorDni(String dnipaciente);
 }

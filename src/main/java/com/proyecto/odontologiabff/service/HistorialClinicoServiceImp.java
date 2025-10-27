@@ -23,18 +23,20 @@ public class HistorialClinicoServiceImp implements HistorialClinicoService {
     public void crearHistorialClinico(HistorialClinicoDTO dto) throws Exception {
         int idTratamiento = dto.getIdtratamiento();
 
+        // Validamos que el tratamiento exista si se seleccionó
         if (idTratamiento > 0) {
             try {
                 restTemplate.getForObject(TRATAMIENTO_URL + "/" + idTratamiento, TratamientosDTO.class);
-            } catch (HttpClientErrorException.NotFound | HttpServerErrorException e) {
+            } catch (HttpClientErrorException.NotFound e) {
                 throw new IllegalArgumentException("❌ El tratamiento con ID " + idTratamiento + " no existe.");
             } catch (ResourceAccessException e) {
                 throw new Exception("⚠️ No se puede conectar con el microservicio de tratamientos.");
             }
         }
 
-        historialRequester.enviarNuevoHistorialClinico(dto);
+        historialRequester.enviarNuevoHistorialClinico(dto); // Envía solo el ID
     }
+
 
     @Override
     public HistorialConTratamientoDTO obtenerHistorialConTratamiento(String dnipaciente) throws Exception {

@@ -56,11 +56,21 @@ public class TurnoController {
     
     
     
-    // Confirmar turno por dni del paciente
-    @PutMapping("/confirmar/{dnipaciente}")
-    public ResponseEntity<TurnoDTO> confirmarTurno(@PathVariable String dnipaciente) {
-        TurnoDTO turnoConfirmado = turnoService.confirmarTurnoPorDni(dnipaciente);
-        return ResponseEntity.ok(turnoConfirmado);
+ // Endpoint para que el front confirme un turno por ID
+    @PutMapping("/confirmar/{idturno}")
+    public ResponseEntity<?> confirmarTurno(
+            @PathVariable int idturno,
+            @RequestBody Map<String, String> payload) {
+
+        String dniOdontologo = payload.get("dniOdontologo"); // recibimos DNI del odontólogo desde el front
+
+        try {
+            TurnoDTO turnoConfirmado = turnoService.confirmarTurnoPorId(idturno, dniOdontologo);
+            return ResponseEntity.ok(turnoConfirmado);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     
@@ -118,4 +128,7 @@ public class TurnoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
         }
     }
+  
+
+    
 }
