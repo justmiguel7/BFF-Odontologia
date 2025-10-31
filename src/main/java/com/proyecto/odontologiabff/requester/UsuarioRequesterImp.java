@@ -26,9 +26,15 @@ public class UsuarioRequesterImp implements UsuarioRequester {
     }
 
     @Override
-    public void registrarUsuario(UsuarioDTO usuarioDTO) {
+    public String registrarUsuario(UsuarioDTO usuarioDTO) {
         HttpEntity<UsuarioDTO> entity = new HttpEntity<>(usuarioDTO);
-        restTemplate.exchange(urlUsuario + pathRegistrar, HttpMethod.POST, entity, Void.class);
+        ResponseEntity<String> response = restTemplate.exchange(
+            urlUsuario + pathRegistrar,
+            HttpMethod.POST,
+            entity,
+            String.class
+        );
+        return response.getBody(); // 🔹 El token de verificación
     }
 
     @Override

@@ -100,24 +100,34 @@ public class TurnoServiceImp implements TurnoService {
 
     @Override
     public void crearTurnoPaciente(TurnoDTO turnoDTO) throws Exception {
-        // Validar existencia de paciente
         if (!turnoRequester.existePaciente(turnoDTO.getDnipaciente())) {
             throw new IllegalArgumentException("El paciente con DNI " + turnoDTO.getDnipaciente() + " no existe");
         }
 
-        // Enviar turno al microservicio
-        turnoRequester.enviarNuevoTurno(turnoDTO);
+        try {
+            turnoRequester.enviarNuevoTurno(turnoDTO);
 
-        // Obtener email del paciente y enviar mail
-        String emailPaciente = turnoRequester.obtenerEmailPaciente(turnoDTO.getDnipaciente());
-        if (emailPaciente != null) {
-            Mail mail = new Mail();
-            mail.setTo(emailPaciente);
-            mail.setSubjet("Turno solicitado");
-            mail.setText("Tu turno ha sido solicitado correctamente. Fecha y hora: " + turnoDTO.getFechaYHora());
-            mailService.enviar(mail);
+            // Enviar correo (si aplica)
+            String emailPaciente = turnoRequester.obtenerEmailPaciente(turnoDTO.getDnipaciente());
+            if (emailPaciente != null) {
+                Mail mail = new Mail();
+                mail.setTo(emailPaciente);
+                mail.setSubjet("Turno solicitado");
+                mail.setText("Tu turno ha sido solicitado correctamente. Fecha y hora: " + turnoDTO.getFechaYHora());
+                mailService.enviar(mail);
+            }
+
+        } catch (IllegalArgumentException e) {
+            // ⚠️ Llega acá cuando el microservicio turno devuelve "Ya existe un turno..."
+            throw new IllegalArgumentException(e.getMessage());
+
+        } catch (Exception e) {
+            throw new Exception("Error al crear turno: " + e.getMessage());
         }
     }
+
+
+
 
     @Override
     public void crearTurnoOdontologo(TurnoDTO turnoDTO) throws Exception {

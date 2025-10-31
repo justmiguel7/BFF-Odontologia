@@ -1,6 +1,7 @@
 package com.proyecto.odontologiabff.controller;
 
 import com.proyecto.odontologiabff.dto.EstadoTurno;
+
 import com.proyecto.odontologiabff.dto.TurnoDTO;
 import com.proyecto.odontologiabff.service.TurnoService;
 
@@ -75,27 +76,31 @@ public class TurnoController {
 
     
 
-    // Endpoint para PACIENTE
     @PostMapping(value = "/agregarTurnoPaciente", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> crearTurnoPaciente(@RequestBody TurnoDTO turnoDTO) {
         try {
             log.info("Creando turno (PACIENTE): {}", turnoDTO);
-
-            // el paciente no debe enviar odontólogo
             turnoDTO.setDniodontologo(null);
             turnoDTO.setEstado(EstadoTurno.PENDIENTE);
 
+            // Llama al servicio que se encarga de comunicarse con el microservicio de turnos
             turnoService.crearTurnoPaciente(turnoDTO);
+
             return ResponseEntity.ok(Map.of("message", "Turno creado correctamente (pendiente de confirmación)"));
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            // ⚠️ Este bloque captura el error que viene del microservicio turno (por ejemplo, turno duplicado)
+            log.warn("Error de validación al crear turno: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+
         } catch (Exception e) {
             log.error("Error al crear turno para paciente", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Map.of("message", "Error interno del servidor"));
         }
-        
-        
     }
+
+
 
     // Endpoint para ODONTÓLOGO
     @PostMapping(value = "/agregarTurnoOdontologo", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
