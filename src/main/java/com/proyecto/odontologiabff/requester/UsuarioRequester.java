@@ -11,6 +11,6 @@ import com.proyecto.odontologiabff.dto.UsuarioDTO;
 
 public interface UsuarioRequester {
 
-    public String registrarUsuario(UsuarioDTO usuarioDTO);
+    String registrarUsuario(UsuarioDTO usuarioDTO);
     String loginUsuario(LoginDTO loginDTO);
 }

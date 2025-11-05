@@ -34,8 +34,9 @@ public class UsuarioRequesterImp implements UsuarioRequester {
             entity,
             String.class
         );
-        return response.getBody(); // 🔹 El token de verificación
+        return response.getBody(); // token de verificación que envía el microservicio
     }
+
 
     @Override
     public String loginUsuario(LoginDTO loginDTO) {

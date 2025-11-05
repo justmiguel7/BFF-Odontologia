@@ -19,40 +19,27 @@ public class UsuarioServiceImp implements UsuarioService {
 
     @Autowired
     private PacienteService pacienteService;
-
+    
     @Autowired
     private DienteService dienteService;
-
+    
     @Autowired
-    private MailService mailService; // 🔹 Tu servicio de envío de correos
+    private MailService mailService;
 
     @Override
     public void registrarPaciente(RegistroPacienteDTO dto) {
         try {
-            // Crear usuario con rol PACIENTE
+            // 1️⃣ Crear usuario en microservicio de usuarios
             UsuarioDTO usuarioDTO = new UsuarioDTO();
             usuarioDTO.setUsername(dto.getUsername());
             usuarioDTO.setPassword(dto.getPassword());
             usuarioDTO.setRol(RolUsuario.PACIENTE);
             usuarioDTO.setDni(dto.getDni());
 
-            // 🔹 Registrar usuario y obtener token de verificación
-            String token = usuarioRequester.registrarUsuario(usuarioDTO);
+            // Este método ahora devuelve el token de verificación
+            String tokenVerificacion = usuarioRequester.registrarUsuario(usuarioDTO);
 
-            // 🔹 Enviar mail de verificación
-            String verificationLink = "http://localhost:8085/auth/verify?token=" + token;
-            Mail mail = new Mail();
-            mail.setTo(dto.getUsername());
-            mail.setSubjet("Verifica tu cuenta - DentalHub");
-            mail.setText("Hola " + dto.getNombre() + ",\n\n"
-                + "Gracias por registrarte en DentalHub 🦷.\n\n"
-                + "Por favor verifica tu cuenta haciendo clic en el siguiente enlace:\n"
-                + verificationLink + "\n\n"
-                + "Si no te registraste, ignora este correo.");
-
-            mailService.enviar(mail);
-
-            // 🔹 Crear paciente y sus dientes base
+            // 2️⃣ Crear paciente en microservicio de pacientes
             PacienteDTO pacienteDTO = new PacienteDTO(
                 dto.getNombre(),
                 dto.getApellido(),
@@ -62,9 +49,16 @@ public class UsuarioServiceImp implements UsuarioService {
                 dto.getUsername(),
                 dto.getFecharegistro()
             );
-
-            dienteService.crearDientesBase(dto.getDni());
             pacienteService.crearPaciente(pacienteDTO);
+            dienteService.crearDientesBase(dto.getDni());
+
+            // 3️⃣ Enviar mail de verificación
+            Mail mail = new Mail();
+            mail.setTo(dto.getUsername());
+            mail.setSubjet("Verificación de cuenta DentalHub");
+            mail.setText("¡Bienvenido! Verifica tu cuenta haciendo clic en el siguiente enlace:\n"
+                        + "http://localhost:8085/auth/verify?token=" + tokenVerificacion);
+            mailService.enviar(mail);
 
         } catch (Exception e) {
             throw new RuntimeException("Error al registrar paciente: " + e.getMessage(), e);
@@ -73,11 +67,6 @@ public class UsuarioServiceImp implements UsuarioService {
 
     @Override
     public String loginUsuario(LoginDTO loginDTO) {
-        try {
-            return usuarioRequester.loginUsuario(loginDTO);
-        } catch (Exception e) {
-            throw new RuntimeException("No se puede iniciar sesión: " + e.getMessage());
-        }
+        return usuarioRequester.loginUsuario(loginDTO);
     }
-
 }

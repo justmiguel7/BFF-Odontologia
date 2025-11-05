@@ -1,6 +1,8 @@
 package com.proyecto.odontologiabff.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -16,5 +18,15 @@ public class HistorialConTratamientoDTO {
     private String alergias;
     private String antecedentesmedicos;
 
-    private TratamientosDTO tratamiento; // Datos del microservicio de tratamientos
+    // Aquí definimos la lista de tratamientos
+    private List<TratamientosDTO> tratamientos;  // tipo lista
+
+    // Getter y Setter para la lista de tratamientos
+    public List<TratamientosDTO> getTratamientos() {
+        return tratamientos;
+    }
+
+    public void setTratamientos(List<TratamientosDTO> tratamientos) {
+        this.tratamientos = tratamientos;
+    }
 }

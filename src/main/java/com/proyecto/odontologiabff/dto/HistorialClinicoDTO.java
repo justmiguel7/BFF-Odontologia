@@ -1,6 +1,7 @@
 package com.proyecto.odontologiabff.dto;
 
 import java.time.LocalDateTime;
+import java.util.List; // Importa List
 import lombok.Data;
 
 @Data
@@ -10,7 +11,7 @@ public class HistorialClinicoDTO {
     private String dnipaciente;
     private String dniodontologo;
     private int idturno;
-    private int idtratamiento;
+    private List<Integer> idtratamientos;  // Cambié a List<Integer> para manejar varios tratamientos
     private String motivodeconsulta;
     private LocalDateTime fechadeconsulta;
     private String diagnostico;
@@ -20,13 +21,13 @@ public class HistorialClinicoDTO {
 
     public HistorialClinicoDTO() {}
 
-    public HistorialClinicoDTO(String dnipaciente, String dniodontologo, int idturno, int idtratamiento,
+    public HistorialClinicoDTO(String dnipaciente, String dniodontologo, int idturno, List<Integer> idtratamientos,
                                String motivodeconsulta, LocalDateTime fechadeconsulta, String diagnostico,
                                String observaciones, String alergias, String antecedentesmedicos) {
         this.dnipaciente = dnipaciente;
         this.dniodontologo = dniodontologo;
         this.idturno = idturno;
-        this.idtratamiento = idtratamiento;
+        this.idtratamientos = idtratamientos;
         this.motivodeconsulta = motivodeconsulta;
         this.fechadeconsulta = fechadeconsulta;
         this.diagnostico = diagnostico;

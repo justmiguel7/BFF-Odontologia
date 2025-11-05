@@ -24,13 +24,25 @@ public class HistorialClinicoRequesterImp implements HistorialClinicoRequester {
     }
 
     @Override
-    public void enviarNuevoHistorialClinico(HistorialClinicoDTO historialClinicoDTO) throws Exception {
+    public HistorialClinicoDTO enviarNuevoHistorialClinico(HistorialClinicoDTO historialClinicoDTO) throws Exception {
         String url = urlBase.concat("/agregar");
         HttpEntity<HistorialClinicoDTO> entity = new HttpEntity<>(historialClinicoDTO);
 
         log.info("➡️ Enviando POST a URL: {}", url); 
         log.info("➡️ Datos del historial: {}", historialClinicoDTO);
 
-        this.restTemplate.exchange(url, HttpMethod.POST, entity, HistorialClinicoDTO.class);
+        ResponseEntity<HistorialClinicoDTO> response = this.restTemplate.exchange(
+            url, 
+            HttpMethod.POST, 
+            entity, 
+            HistorialClinicoDTO.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.CREATED) {
+            log.info("✅ Historial clínico creado exitosamente.");
+            return response.getBody();  // Devolvemos el HistorialClinicoDTO con el ID asignado.
+        } else {
+            throw new Exception("❌ Error al crear historial clínico.");
+        }
     }
 }
