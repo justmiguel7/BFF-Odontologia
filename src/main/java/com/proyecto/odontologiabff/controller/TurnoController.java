@@ -132,6 +132,18 @@ public class TurnoController {
             log.error("Error al crear turno para odontólogo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
         }
+        
+        
+    }
+    
+    @PutMapping("/cancelar/{idturno}")
+    public ResponseEntity<?> cancelarTurno(@PathVariable int idturno) {
+        try {
+            TurnoDTO turnoCancelado = turnoService.cancelarTurno(idturno);
+            return ResponseEntity.ok(turnoCancelado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
   
 

@@ -41,13 +41,23 @@ public class TurnoServiceImp implements TurnoService {
     @Override
     public void crearTurno(TurnoDTO turnoDTO) throws Exception {
         turnoRequester.enviarNuevoTurno(turnoDTO);
-        // Opcional: enviar mail genérico
+
         String emailPaciente = turnoRequester.obtenerEmailPaciente(turnoDTO.getDnipaciente());
-        if (emailPaciente != null) {
+        String nombrePaciente = turnoRequester.obtenerNombrePaciente(turnoDTO.getDnipaciente());
+
+        if (emailPaciente != null && nombrePaciente != null) {
             Mail mail = new Mail();
             mail.setTo(emailPaciente);
-            mail.setSubjet("Turno creado");
-            mail.setText("Tu turno ha sido creado correctamente. Fecha y hora: " + turnoDTO.getFechaYHora());
+            mail.setSubjet("¡Tu turno ha sido creado exitosamente!");
+            mail.setText(
+                "Hola " + nombrePaciente + ",\n\n" +
+                "Tu turno ha sido registrado correctamente en nuestro sistema.\n" +
+                "📅 Fecha y hora: " + turnoDTO.getFechaYHora() + "\n\n" +
+                "Te esperamos en nuestra clínica para brindarte la mejor atención.\n\n" +
+                "¡Gracias por confiar en nosotros!\n" +
+                "Saludos cordiales,\n" +
+                "El equipo de Odontología"
+            );
             mailService.enviar(mail);
         }
     }
@@ -55,10 +65,8 @@ public class TurnoServiceImp implements TurnoService {
 
     @Override
     public TurnoDTO confirmarTurnoPorId(int idTurno, String dniOdontologo) throws Exception {
-        // 🔹 Preparamos el body para enviar al microservicio (solo DNI del odontólogo)
         HttpEntity<String> entity = new HttpEntity<>(dniOdontologo);
 
-        // 🔹 Llamamos al microservicio TURNOS para actualizar el turno
         TurnoDTO turnoActualizado = restTemplate.exchange(
                 urlTurno + "/confirmar/" + idTurno,
                 HttpMethod.PUT,
@@ -70,25 +78,31 @@ public class TurnoServiceImp implements TurnoService {
             throw new IllegalArgumentException("No se pudo actualizar el turno en el microservicio");
         }
 
-        // 🔹 Seteamos el estado CONFIRMADO en el BFF (opcional si el microservicio ya lo hace)
         turnoActualizado.setEstado(EstadoTurno.CONFIRMADO);
         turnoActualizado.setDniodontologo(dniOdontologo);
 
-        // 🔹 Traemos datos del odontólogo para el mail
         OdontologoDTO odontologo = restTemplate.getForObject(
                 urlOdontologo + "/buscarPorDni/" + dniOdontologo,
                 OdontologoDTO.class
         );
 
-        // 🔹 Enviar mail al paciente
         String emailPaciente = turnoRequester.obtenerEmailPaciente(turnoActualizado.getDnipaciente());
-        if (emailPaciente != null && odontologo != null) {
+        String nombrePaciente = turnoRequester.obtenerNombrePaciente(turnoActualizado.getDnipaciente());
+
+        if (emailPaciente != null && odontologo != null && nombrePaciente != null) {
             Mail mail = new Mail();
             mail.setTo(emailPaciente);
-            mail.setSubjet("Turno confirmado");
-            mail.setText("Tu turno ha sido confirmado por el odontólogo "
-                    + odontologo.getNombre() + " " + odontologo.getApellido()
-                    + " para el día " + turnoActualizado.getFechaYHora());
+            mail.setSubjet("✅ Tu turno ha sido confirmado");
+            mail.setText(
+                "Hola " + nombrePaciente + ",\n\n" +
+                "Nos complace informarte que tu turno ha sido confirmado por el odontólogo " +
+                odontologo.getNombre() + " " + odontologo.getApellido() + ".\n" +
+                "📅 Fecha y hora: " + turnoActualizado.getFechaYHora() + "\n\n" +
+                "Recuerda llegar 10 minutos antes de la cita y traer tu documentación.\n\n" +
+                "¡Esperamos verte pronto!\n" +
+                "Saludos cordiales,\n" +
+                "El equipo de Odontología"
+            );
             mailService.enviar(mail);
         }
 
@@ -107,20 +121,27 @@ public class TurnoServiceImp implements TurnoService {
         try {
             turnoRequester.enviarNuevoTurno(turnoDTO);
 
-            // Enviar correo (si aplica)
             String emailPaciente = turnoRequester.obtenerEmailPaciente(turnoDTO.getDnipaciente());
-            if (emailPaciente != null) {
+            String nombrePaciente = turnoRequester.obtenerNombrePaciente(turnoDTO.getDnipaciente());
+
+            if (emailPaciente != null && nombrePaciente != null) {
                 Mail mail = new Mail();
                 mail.setTo(emailPaciente);
-                mail.setSubjet("Turno solicitado");
-                mail.setText("Tu turno ha sido solicitado correctamente. Fecha y hora: " + turnoDTO.getFechaYHora());
+                mail.setSubjet("📌 Tu turno ha sido solicitado");
+                mail.setText(
+                    "Hola " + nombrePaciente + ",\n\n" +
+                    "Tu solicitud de turno ha sido registrada exitosamente.\n" +
+                    "📅 Fecha y hora: " + turnoDTO.getFechaYHora() + "\n\n" +
+                    "Pronto recibirás la confirmación de tu turno.\n\n" +
+                    "Gracias por confiar en nosotros.\n" +
+                    "Saludos,\n" +
+                    "El equipo de Odontología"
+                );
                 mailService.enviar(mail);
             }
 
         } catch (IllegalArgumentException e) {
-            // ⚠️ Llega acá cuando el microservicio turno devuelve "Ya existe un turno..."
             throw new IllegalArgumentException(e.getMessage());
-
         } catch (Exception e) {
             throw new Exception("Error al crear turno: " + e.getMessage());
         }
@@ -131,7 +152,6 @@ public class TurnoServiceImp implements TurnoService {
 
     @Override
     public void crearTurnoOdontologo(TurnoDTO turnoDTO) throws Exception {
-        // Validar existencia de paciente y odontólogo
         if (!turnoRequester.existePaciente(turnoDTO.getDnipaciente())) {
             throw new IllegalArgumentException("El paciente con DNI " + turnoDTO.getDnipaciente() + " no existe");
         }
@@ -139,16 +159,23 @@ public class TurnoServiceImp implements TurnoService {
             throw new IllegalArgumentException("El odontólogo con DNI " + turnoDTO.getDniodontologo() + " no existe");
         }
 
-        // Enviar turno al microservicio
         turnoRequester.enviarNuevoTurno(turnoDTO);
 
-        // Obtener email del paciente y enviar mail
         String emailPaciente = turnoRequester.obtenerEmailPaciente(turnoDTO.getDnipaciente());
-        if (emailPaciente != null) {
+        String nombrePaciente = turnoRequester.obtenerNombrePaciente(turnoDTO.getDnipaciente());
+
+        if (emailPaciente != null && nombrePaciente != null) {
             Mail mail = new Mail();
             mail.setTo(emailPaciente);
-            mail.setSubjet("Turno confirmado");
-            mail.setText("Tu turno ha sido confirmado por el odontólogo. Fecha y hora: " + turnoDTO.getFechaYHora());
+            mail.setSubjet("✅ Tu turno ha sido confirmado por el odontólogo");
+            mail.setText(
+                "Hola " + nombrePaciente + ",\n\n" +
+                "Tu turno ha sido confirmado por el odontólogo.\n" +
+                "📅 Fecha y hora: " + turnoDTO.getFechaYHora() + "\n\n" +
+                "Te esperamos en nuestra clínica para atenderte de la mejor manera.\n\n" +
+                "Saludos cordiales,\n" +
+                "El equipo de Odontología"
+            );
             mailService.enviar(mail);
         }
     }
@@ -169,6 +196,38 @@ public class TurnoServiceImp implements TurnoService {
     }
     
     
-    
+    @Override
+    public TurnoDTO cancelarTurno(int idTurno) throws Exception {
+        // 🔹 Llamamos al microservicio TURNOS para cancelar el turno
+        TurnoDTO turnoCancelado = restTemplate.exchange(
+                urlTurno + "/cancelar/" + idTurno,
+                HttpMethod.PUT,
+                null,
+                TurnoDTO.class
+        ).getBody();
+
+        if (turnoCancelado == null) {
+            throw new IllegalArgumentException("No se pudo cancelar el turno en el microservicio");
+        }
+
+        // 🔹 Seteamos el estado CANCELADO (por si el microservicio no lo devuelve actualizado)
+        turnoCancelado.setEstado(EstadoTurno.CANCELADO);
+
+        // 🔹 Traemos datos del paciente (para enviarle correo)
+        String emailPaciente = turnoRequester.obtenerEmailPaciente(turnoCancelado.getDnipaciente());
+
+        // 🔹 Enviar mail al paciente notificando cancelación
+        if (emailPaciente != null) {
+            Mail mail = new Mail();
+            mail.setTo(emailPaciente);
+            mail.setSubjet("Turno cancelado");
+            mail.setText("Tu turno del día " + turnoCancelado.getFechaYHora()
+                    + " ha sido cancelado. Si deseas reagendarlo, por favor comunícate con la clínica.");
+
+            mailService.enviar(mail);
+        }
+
+        return turnoCancelado;
+    }
     
 }

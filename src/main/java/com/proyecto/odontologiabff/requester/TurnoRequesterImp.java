@@ -108,4 +108,18 @@ public class TurnoRequesterImp implements TurnoRequester {
         }
         return null;
     }
+
+	@Override
+	public String obtenerNombrePaciente(String dnipaciente) {
+		// TODO Auto-generated method stub
+        try {
+            String url = urlPaciente + "/buscarPorDni/" + dnipaciente;
+            ResponseEntity<PacienteDTO> response = restTemplate.getForEntity(url, PacienteDTO.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody().getNombre();
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo obtener email del paciente {}: {}", dnipaciente, e.getMessage());
+        }
+        return null;	}
 }

@@ -19,7 +19,7 @@ public interface TurnoService {
     List<TurnoDTO> obtenerListadoTurnos();
 	TurnoDTO confirmarTurnoPorId(int idTurno, String dniOdontologo) throws Exception;
 
-
+	TurnoDTO cancelarTurno(int idturno) throws Exception;
 
 
 }
